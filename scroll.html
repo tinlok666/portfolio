@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>WebGL Scroll Spiral </title>
+
+	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="cssscroll/demo.css" />
+	<link rel="stylesheet" href="static/dist/style.css"/>
+
+</head>
+<body>
+
+
+
+
+
+	<canvas id="webgl"></canvas>
+	
+	<main>
+		<a href="EffectSkill.html" class="c-link c-link--back">
+			<span class="c-link__prepend">
+				<svg class="u-icon u-icon--chevron-left" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 15">
+					<path d="M10.4.9l1.4 1.4-5 5.2 4.9 5.2-1.5 1.4-6.1-6.6L10.4.9z"></path>
+				</svg>
+			</span>
+			<span class="c-link__label">Back</span>
+		</a>
+		<section class="content1 content1--main">
+			
+		</section>
+		
+	</main>
+	<script src="static/js/regl.min.js"></script>
+	<script type="x-shader/x-fragment" id="fragmentShader">
+	#define TWO_PI 6.2831853072
+	#define PI 3.14159265359
+
+	precision highp float;
+
+	uniform float globaltime;
+	uniform vec2 resolution;
+	uniform float aspect;
+	uniform float scroll;
+	uniform float velocity;
+	uniform sampler2D texture;
+
+	const float timescale = 0.1;
+	const float twist = 2.0;
+
+	vec2 rotate(vec2 v, float angle) {
+		float c = cos(angle);
+		float s = sin(angle);
+		return v * mat2(c, -s, s, c);
+	}
+
+	float nsin(float value) {
+		return sin(value * TWO_PI) * 0.5 + 0.5;
+	}
+
+	void main(void) {
+		float time = globaltime * timescale;
+		vec2 center = vec2(sin(TWO_PI * time * 0.2), cos(TWO_PI * time * 0.2)) * nsin(time * 0.3) * 0.5;
+		vec2 tx = (gl_FragCoord.xy / resolution.xy - 0.5 - center) * vec2(aspect, 1.0);
+		float len = 1.0 - length(tx);
+		float zoom = 1.0 + scroll - len * 3.0 * (1.0 - scroll) + len * velocity * 10.0;
+
+		vec4 imgColor = texture2D(
+			texture,
+			rotate(
+				(tx + center) * vec2(1.0, -1.0) * zoom,
+				twist * TWO_PI * nsin(len + time) * scroll + time
+			) + 0.5
+		);
+
+		gl_FragColor = imgColor;
+	}
+	</script>
+	<script src="static/js/demo5.js"></script>
+</body>
+</html>
