@@ -4,7 +4,11 @@
 
 - [Gulp](https://gulpjs.com/) 4 used
 - [browsersync](https://browsersync.io/) for live reload
-
+#### VS CODE
+************
+install live server
+run port.html
+************
 #### Scripts
 
 -  dev environent with browsersync
